@@ -18,9 +18,8 @@ inputs:
     description: "Whether to use yyc to build the game. Defaults to false. If false, uses vm."
     required: false
     default: false
-secrets:
   access-key:
-    description: "The Access Key to get licenses from to build the game."
+    description: "The Access Key to get licenses from to build the game. (This should be a secret)"
     required: true
 
 runs:
