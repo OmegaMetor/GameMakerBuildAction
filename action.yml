@@ -1,0 +1,31 @@
+name: "Build GameMaker Project"
+description: "Build a GameMaker project for the selected platform, with the selected options."
+branding:
+  icon: "code"
+  color: "blue"
+author: "OmegaMetor"
+inputs:
+  runtime-version:
+    description: "The exact runtime version to build the game with, like 2.3.4.443"
+    required: true
+  platform:
+    description: "The platform to build for. Examples: linux, mac, windows, html5."
+    required: true
+  game-yyp-path:
+    description: "The path to the yyp file for the game that should be built."
+    required: true
+  build-yyc:
+    description: "Whether to use yyc to build the game. Defaults to false. If false, uses vm."
+    required: false
+    default: false
+secrets:
+  access-key:
+    description: "The Access Key to get licenses from to build the game."
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Do first thing
+      run: "echo Hi"
+      shell: bash
