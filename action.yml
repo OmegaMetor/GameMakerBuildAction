@@ -18,6 +18,10 @@ inputs:
     description: "Whether to use yyc to build the game. Defaults to false. If false, uses vm."
     required: false
     default: false
+  out-file:
+    description: "Path to output the file to."
+    required: true
+    default: "Game.zip"
   access-key:
     description: "The Access Key to get licenses from to build the game. (This should be a secret)"
     required: true
@@ -25,6 +29,30 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Do first thing
-      run: "echo Key is ${{ inputs.access-key }}"
+    - name: Build Game
+      run: |
+        echo Key is ${{ inputs.access-key }}
+        if [ "$RUNNER_OS" == "Linux" ]; then
+              igor_executable=${{ github.action_path }}/dep-bin/igor/linux/x64/Igor
+         elif [ "$RUNNER_OS" == "Windows" ]; then
+              igor_executable=${{ github.action_path }}/dep-bin/igor/windows/x64/Igor.exe
+         elif [ "$RUNNER_OS" == "macOs" ]; then
+              igor_executable=${{ github.action_path }}/dep-bin/igor/osx/arm64/Igor
+         else
+              echo "$RUNNER_OS not supported"
+              exit 1
+         fi
+        chmod +x $igor_executable
+        echo Getting license...
+        $igor_executable runtime FetchLicense -ak ${{ inputs.access-key }} -of ${{ github.action_path }}/license.plist
+        echo Downloading runtime...
+        cd ${{ github.action_path }}
+        $igor_executable runtime Install ${{ inputs.runtime-version }} -lf ${{ github.action_path }}/license.plist
+        cd -
+        echo Build project
+        mkdir ${{ github.action_path }}/cache
+        mkdir ${{ github.action_path }}/temp
+        mkdir ${{ github.action_path }}/out
+        
+        $igor_executable /rp ${{ github.action_path }} /lf ${{ github.action_path }}/license.plist /cache ${{ github.action_path }}/cache /temp ${{ github.action_path }}/temp /project ${{ inputs.game-yyp-path }} /of ${{ github.action_path }}/out /tf ${{ inputs.out-file }} ${{ inputs.platform }} Package
       shell: bash
