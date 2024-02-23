@@ -26,5 +26,5 @@ runs:
   using: "composite"
   steps:
     - name: Do first thing
-      run: "echo Hi"
+      run: "echo Key is ${{ inputs.access-key }}"
       shell: bash
