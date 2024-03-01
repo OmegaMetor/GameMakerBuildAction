@@ -33,19 +33,29 @@ runs:
       run: |
         echo Key is ${{ inputs.access-key }}
         if [ "$RUNNER_OS" == "Linux" ]; then
-              igor_executable=${{ github.action_path }}/dep-bin/igor/linux/x64/Igor
-         elif [ "$RUNNER_OS" == "Windows" ]; then
-              igor_executable=${{ github.action_path }}/dep-bin/igor/windows/x64/Igor.exe
-         elif [ "$RUNNER_OS" == "macOs" ]; then
-              igor_executable=${{ github.action_path }}/dep-bin/igor/osx/arm64/Igor
-         else
-              echo "$RUNNER_OS not supported"
-              exit 1
-         fi
-        chmod +x $igor_executable
-        echo Getting license...
+            igor_link=https://gms.yoyogames.com/igor_linux-x64.zip
+            igor_executable=${{ github.action_path }}/igor/Igor
+        elif [ "$RUNNER_OS" == "Windows" ]; then
+            igor_link=https://gms.yoyogames.com/igor_win-x64.zip
+            igor_executable=${{ github.action_path }}/igor/Igor.exe
+        elif [ "$RUNNER_OS" == "macOs" ]; then
+            igor_link=https://gms.yoyogames.com/igor_osx.11.0-arm64.zip
+            igor_executable=${{ github.action_path }}/igor/Igor
+        else
+            echo "$RUNNER_OS not supported"
+            exit 1
+        fi
+
+        echo Downloading Igor
+
+        mkdir ${{ github.action_path }}/igor
+        curl -o ${{ github.action_path }}/igor/igor.zip $igor_link
+        unzip ${{ github.action_path }}/igor/igor.zip -d ${{ github.action_path }}/igor
+
+        echo Getting license
         $igor_executable runtime FetchLicense -ak ${{ inputs.access-key }} -of ${{ github.action_path }}/license.plist
         echo Downloading runtime...
+        mkdir ${{ github.action_path }}
         cd ${{ github.action_path }}
         $igor_executable runtime Install ${{ inputs.runtime-version }} -lf ${{ github.action_path }}/license.plist
         cd -
@@ -54,5 +64,5 @@ runs:
         mkdir ${{ github.action_path }}/temp
         mkdir ${{ github.action_path }}/out
         
-        $igor_executable /rp ${{ github.action_path }} /lf ${{ github.action_path }}/license.plist /cache ${{ github.action_path }}/cache /temp ${{ github.action_path }}/temp /project ${{ inputs.game-yyp-path }} /of ${{ github.action_path }}/out /tf ${{ inputs.out-file }} ${{ inputs.platform }} Package
+        $igor_executable /rp ${{ github.action_path }}/runtime-${{ inputs.runtime-version }} /lf ${{ github.action_path }}/license.plist /cache ${{ github.action_path }}/cache /temp ${{ github.action_path }}/temp /project ${{ inputs.game-yyp-path }} /of ${{ github.action_path }}/out /tf ${{ inputs.out-file }} ${{ inputs.platform }} Package
       shell: bash
