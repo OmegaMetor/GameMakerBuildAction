@@ -55,8 +55,8 @@ runs:
         echo Getting license
         $igor_executable runtime FetchLicense -ak ${{ inputs.access-key }} -of ${{ github.action_path }}/license.plist
         echo Downloading runtime...
-        mkdir ${{ github.action_path }}
-        cd ${{ github.action_path }}
+        mkdir ${{ github.action_path }}/runner
+        cd ${{ github.action_path }}/runner
         $igor_executable runtime Install ${{ inputs.runtime-version }} -lf ${{ github.action_path }}/license.plist
         cd -
         echo Build project
@@ -64,5 +64,5 @@ runs:
         mkdir ${{ github.action_path }}/temp
         mkdir ${{ github.action_path }}/out
         
-        $igor_executable /rp ${{ github.action_path }}/runtime-${{ inputs.runtime-version }} /lf ${{ github.action_path }}/license.plist /cache ${{ github.action_path }}/cache /temp ${{ github.action_path }}/temp /project ${{ inputs.game-yyp-path }} /of ${{ github.action_path }}/out /tf ${{ inputs.out-file }} ${{ inputs.platform }} Package
+        $igor_executable /rp ${{ github.action_path }}/runtime/runtime-${{ inputs.runtime-version }} /lf ${{ github.action_path }}/license.plist /cache ${{ github.action_path }}/cache /temp ${{ github.action_path }}/temp /project ${{ inputs.game-yyp-path }} /of ${{ github.action_path }}/out /tf ${{ inputs.out-file }} ${{ inputs.platform }} Package
       shell: bash
